@@ -62,3 +62,61 @@ void 		aff_grille(SDL_Surface *screen)
 	SDL_BlitSurface(grille, NULL, screen, &pos);
 	SDL_Flip(screen);
 }
+
+void 					aff_hud(SDL_Surface *screen)
+{
+	SDL_Rect 			pos;
+	SDL_Surface 		*hud[8];
+	int 				i = 4;
+
+	pos.x = 0;
+	pos.y = 0;
+
+	hud[0] = IMG_Load("img/texture/portrait.png");
+	hud[1] = IMG_Load("img/texture/sake.png");
+	hud[2] = IMG_Load("img/texture/sake_pow.png");
+	hud[3] = IMG_Load("img/texture/sake_pow_end.png");
+	hud[4] = IMG_Load("img/texture/life.png");
+	hud[5] = IMG_Load("img/texture/life_pow.png");
+	hud[6] = IMG_Load("img/texture/life_pow_end.png");
+	hud[7] = IMG_Load("img/texture/inventaire.png");
+
+	SDL_BlitSurface(hud[0], NULL, screen, &pos); // Affichage portrait
+	
+	pos.x = 80;
+	pos.y = 40;
+
+	SDL_BlitSurface(hud[1], NULL, screen, &pos); // Affichage sake
+
+	pos.x = pos.x + 40;
+
+	while (i >= 0)
+	{
+		SDL_BlitSurface(hud[2], NULL, screen, &pos);
+		i--;
+		pos.x = pos.x + 40;
+	}
+	SDL_BlitSurface(hud[3], NULL, screen, &pos);
+
+	pos.x = 80;
+	pos.y = 0;
+
+	SDL_BlitSurface(hud[4], NULL, screen, &pos); // Affichage sake
+
+	pos.x = pos.x + 40;
+	i = 4;
+
+	while (i >= 0)
+	{
+		SDL_BlitSurface(hud[5], NULL, screen, &pos);
+		i--;
+		pos.x = pos.x + 40;
+	}
+	SDL_BlitSurface(hud[6], NULL, screen, &pos);
+
+	pos.x = 1040;
+
+	SDL_BlitSurface(hud[7], NULL, screen, &pos);
+
+	SDL_Flip(screen);
+}

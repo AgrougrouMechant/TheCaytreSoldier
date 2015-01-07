@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 #include "include/func.h"
 #include <sys/stat.h> 
 #include <fcntl.h>
@@ -52,62 +53,67 @@ int 		*fill_map(char *path)
 	return (map);
 }
 
-void 					aff_hud(SDL_Surface *screen)
+void 		load_start_screen(SDL_Surface *screen)
 {
-	SDL_Rect 			pos;
-	SDL_Surface 		*hud[8];
-	int 				i = 4;
+	//Déclaration des surfaces
+	SDL_Surface 	*bg, *b0, *b1, *b2, *b3;
+
+	//Déclaration des position
+	SDL_Rect		pos;
+
+	//Déclaration des police
+	TTF_Font 		*title, *menu;
+
+	//Déclaration
+	SDL_Color 		black = {0, 0, 0};
+	SDL_Color 		yellow = {255, 220, 0}; // 255 246 13
+
+	//Chargement des polices
+	title = TTF_OpenFont("font/martyric.ttf", 72);
+	menu = TTF_OpenFont("font/chinesetakeaway.ttf", 48);
+
+	// Chargement des surfaces
+	bg = IMG_Load("img/texture/bg_start_menu.png");
+	b0 = TTF_RenderText_Blended(title, "The Caytre Soldier", black);
+	b1 = TTF_RenderText_Blended(menu, "Nouvelle partie", yellow);
+	b2 = TTF_RenderText_Blended(menu, "Charger une partie", yellow);
+	b3 = TTF_RenderText_Blended(menu, "Quitter", yellow);
+
+
+	//----------- DEBUT CODE DEGUEULASSE
 
 	pos.x = 0;
 	pos.y = 0;
 
-	hud[0] = IMG_Load("img/texture/portrait.png");
-	hud[1] = IMG_Load("img/texture/sake.png");
-	hud[2] = IMG_Load("img/texture/sake_pow.png");
-	hud[3] = IMG_Load("img/texture/sake_pow_end.png");
-	hud[4] = IMG_Load("img/texture/life.png");
-	hud[5] = IMG_Load("img/texture/life_pow.png");
-	hud[6] = IMG_Load("img/texture/life_pow_end.png");
-	hud[7] = IMG_Load("img/texture/inventaire.png");
+	SDL_BlitSurface(bg, NULL, screen, &pos);
 
-	SDL_BlitSurface(hud[0], NULL, screen, &pos); // Affichage portrait
-	
-	pos.x = 80;
+	pos.x = (1280 / 2) - (b0->w / 2);
 	pos.y = 40;
 
-	SDL_BlitSurface(hud[1], NULL, screen, &pos); // Affichage sake
+	SDL_BlitSurface(b0, NULL, screen, &pos);
 
-	pos.x = pos.x + 40;
+	pos.x = (1280 / 2) - (b1->w / 2);
+	pos.y = pos.y + b0->h + 100;
 
-	while (i >= 0)
-	{
-		SDL_BlitSurface(hud[2], NULL, screen, &pos);
-		i--;
-		pos.x = pos.x + 40;
-	}
-	SDL_BlitSurface(hud[3], NULL, screen, &pos);
+	SDL_BlitSurface(b1, NULL, screen, &pos);
 
-	pos.x = 80;
-	pos.y = 0;
+	pos.x = (1280 / 2) - (b2->w / 2);
+	pos.y = pos.y + b1->h + 40;
 
-	SDL_BlitSurface(hud[4], NULL, screen, &pos); // Affichage sake
+	SDL_BlitSurface(b2, NULL, screen, &pos);
 
-	pos.x = pos.x + 40;
-	i = 4;
+	pos.x = (1280 / 2) - (b3->w / 2);
+	pos.y = pos.y + b2->h + 40;
 
-	while (i >= 0)
-	{
-		SDL_BlitSurface(hud[5], NULL, screen, &pos);
-		i--;
-		pos.x = pos.x + 40;
-	}
-	SDL_BlitSurface(hud[6], NULL, screen, &pos);
+	SDL_BlitSurface(b3, NULL, screen, &pos);
 
-	pos.x = 1040;
+	// --------------------------------------
 
-	SDL_BlitSurface(hud[7], NULL, screen, &pos);
 
 	SDL_Flip(screen);
+
+	TTF_CloseFont(title);
+	TTF_CloseFont(menu);
 }
 
 int			main(int ac, char **av)
@@ -119,15 +125,19 @@ int			main(int ac, char **av)
 	pos.y = 440;
 
 	SDL_Init(SDL_INIT_EVERYTHING); // Initialisation SDL
+	TTF_Init(); // Initialisation SDL_TTF
 
 	screen = SDL_SetVideoMode(1280, 720, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); // Création du BG
 	SDL_WM_SetCaption("The Caytre Soldier", NULL);
-	aff_level(screen, fill_map("Level/Level1/slide1.txt"));
+/*	aff_level(screen, fill_map("Level/Level1/slide1.txt"));
 	aff_vietmouss(screen, pos);
 	aff_grille(screen);
-	aff_hud(screen);
+	aff_hud(screen);*/
+	load_start_screen(screen);
 	pause();
 
+
+	TTF_Quit();
 	SDL_Quit();
 
 }
