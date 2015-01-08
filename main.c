@@ -36,7 +36,6 @@ int 		*fill_map(char *path)
 	index = 0;
 	map = malloc(sizeof(int) * 2056);
 	fd = open(path, O_RDONLY);
-	SDL_Delay(120);
 	read(fd, buffer, 2056);
 	close(fd);
 	buffer[2055] = '\0';
@@ -56,10 +55,14 @@ int 		*fill_map(char *path)
 void 		load_start_screen(SDL_Surface *screen)
 {
 	//Déclaration des surfaces
-	SDL_Surface 	*bg, *b0, *b1, *b2, *b3;
+	SDL_Surface 	*bg, *b0, *b1, *b2, *b3, *b4, *b5, *b6;
 
 	//Déclaration des position
-	SDL_Rect		pos;
+	SDL_Rect		posBg;
+	SDL_Rect		posTitle;
+	SDL_Rect		posNewG;
+	SDL_Rect		posLoadG;
+	SDL_Rect		posLeave;
 
 	//Déclaration des police
 	TTF_Font 		*title, *menu;
@@ -67,17 +70,23 @@ void 		load_start_screen(SDL_Surface *screen)
 	//Déclaration
 	SDL_Color 		black = {0, 0, 0};
 	SDL_Color 		yellow = {255, 220, 0}; // 255 246 13
+	SDL_Color		selected = {255, 246, 13};
 
 	//Chargement des polices
 	title = TTF_OpenFont("font/martyric.ttf", 72);
 	menu = TTF_OpenFont("font/chinesetakeaway.ttf", 48);
 
-	// Chargement des surfaces
+	//Chargement des surfaces
 	bg = IMG_Load("img/texture/bg_start_menu.png");
 	b0 = TTF_RenderText_Blended(title, "The Caytre Soldier", black);
 	b1 = TTF_RenderText_Blended(menu, "Nouvelle partie", yellow);
 	b2 = TTF_RenderText_Blended(menu, "Charger une partie", yellow);
 	b3 = TTF_RenderText_Blended(menu, "Quitter", yellow);
+	b4 = TTF_RenderText_Blended(menu, "Nouvelle partie", selected);
+	b5 = TTF_RenderText_Blended(menu, "Charger une partie", selected);
+	b6 = TTF_RenderText_Blended(menu, "Quitter", selected);
+
+	//
 
 
 	//----------- DEBUT CODE DEGUEULASSE
@@ -111,6 +120,8 @@ void 		load_start_screen(SDL_Surface *screen)
 
 
 	SDL_Flip(screen);
+
+
 
 	TTF_CloseFont(title);
 	TTF_CloseFont(menu);
