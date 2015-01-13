@@ -52,6 +52,19 @@ int 		*fill_map(char *path)
 	return (map);
 }
 
+void 		load_new_game(SDL_Surface *screen)
+{
+	SDL_Rect pos;
+
+	pos.x = 160;
+	pos.y = 440;
+
+	aff_level(screen, fill_map("Level/Level1/slide1.txt"));
+	aff_vietmouss(screen, pos);
+	aff_grille(screen);
+	aff_hud(screen);
+}
+
 void 		load_start_screen(SDL_Surface *screen)
 {
 	//Déclaration des surfaces
@@ -65,12 +78,20 @@ void 		load_start_screen(SDL_Surface *screen)
 	SDL_Rect		posLeave;
 
 	//Déclaration des police
-	TTF_Font 		*title, *menu;
+	TTF_Font 		*title;
+	TTF_Font 		*menu;
 
-	//Déclaration
+	//Déclaration des events
+	SDL_Event 		event;
+
+	//Déclaration de variable tierce
+	int 			choice = 0;
+	int 			i = 1;
+
+	//Déclaration et initialisation des couleurs
 	SDL_Color 		black = {0, 0, 0};
 	SDL_Color 		yellow = {255, 220, 0}; // 255 246 13
-	SDL_Color		selected = {255, 246, 13};
+	SDL_Color		selected = {255, 0, 0};
 
 	//Chargement des polices
 	title = TTF_OpenFont("font/martyric.ttf", 72);
@@ -86,46 +107,104 @@ void 		load_start_screen(SDL_Surface *screen)
 	b5 = TTF_RenderText_Blended(menu, "Charger une partie", selected);
 	b6 = TTF_RenderText_Blended(menu, "Quitter", selected);
 
-	//
+	//Initialisation des positions
+	posBg.x = 0;
+	posBg.y = 0;
+	//-- Titre
+	posTitle.x = (1280 / 2) - (b0->w / 2);
+	posTitle.y = 40;
+	//-- Nouvelle partie
+	posNewG.x = (1280 / 2) - (b1->w / 2);
+	posNewG.y = posTitle.y + b0->h + 100;
+	//-- Charger une partie
+	posLoadG.x = (1280 / 2) - (b2->w / 2);
+	posLoadG.y = posNewG.y + b1->h + 40;
+	//-- Quitter
+	posLeave.x = (1280 / 2) - (b3->w / 2);
+	posLeave.y = posLoadG.y + b2->h + 40;
 
 
-	//----------- DEBUT CODE DEGUEULASSE
+	//----------- Collage des surfaces
+	SDL_BlitSurface(bg, NULL, screen, &posBg);
+	SDL_BlitSurface(b0, NULL, screen, &posTitle);
+	SDL_BlitSurface(b4, NULL, screen, &posNewG);
+	SDL_BlitSurface(b2, NULL, screen, &posLoadG);
+	SDL_BlitSurface(b3, NULL, screen, &posLeave);
+	
+	//Début event
+	while (choice != 1)
+	{
+		SDL_WaitEvent(&event);
+		switch (event.type)
+		{
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_UP:
+						switch(i)
+						{
+							case 1:
+								i = 3;
+								SDL_BlitSurface(b6, NULL, screen, &posLeave);
+								SDL_BlitSurface(b1, NULL, screen, &posNewG);
+								break;
+							case 2:
+								i = 1;
+								SDL_BlitSurface(b4, NULL, screen, &posNewG);
+								SDL_BlitSurface(b2, NULL, screen, &posLoadG);
+								break;
+							case 3:
+								i = 2;
+								SDL_BlitSurface(b5, NULL, screen, &posLoadG);
+								SDL_BlitSurface(b3, NULL, screen, &posLeave);
+								break;
+						}
+						break;
+					case SDLK_DOWN:
+						switch(i)
+						{
+							case 1:
+								i = 2;
+								SDL_BlitSurface(b5, NULL, screen, &posLoadG);
+								SDL_BlitSurface(b1, NULL, screen, &posNewG);
+								break;
+							case 2:
+								i = 3;
+								SDL_BlitSurface(b6, NULL, screen, &posLeave);
+								SDL_BlitSurface(b2, NULL, screen, &posLoadG);
+								break;
+							case 3:
+								i = 1;
+								SDL_BlitSurface(b4, NULL, screen, &posNewG);
+								SDL_BlitSurface(b3, NULL, screen, &posLeave);
+								break;
+						}
+						break;
+					case SDLK_RETURN:
+						choice = 1;
+						break;
+				}
+		}
+		SDL_Flip(screen);
+	}
 
-	pos.x = 0;
-	pos.y = 0;
-
-	SDL_BlitSurface(bg, NULL, screen, &pos);
-
-	pos.x = (1280 / 2) - (b0->w / 2);
-	pos.y = 40;
-
-	SDL_BlitSurface(b0, NULL, screen, &pos);
-
-	pos.x = (1280 / 2) - (b1->w / 2);
-	pos.y = pos.y + b0->h + 100;
-
-	SDL_BlitSurface(b1, NULL, screen, &pos);
-
-	pos.x = (1280 / 2) - (b2->w / 2);
-	pos.y = pos.y + b1->h + 40;
-
-	SDL_BlitSurface(b2, NULL, screen, &pos);
-
-	pos.x = (1280 / 2) - (b3->w / 2);
-	pos.y = pos.y + b2->h + 40;
-
-	SDL_BlitSurface(b3, NULL, screen, &pos);
-
-	// --------------------------------------
-
-
-	SDL_Flip(screen);
-
-
-
+	switch (i)
+	{
+		case 1:
+			load_new_game(screen);
+			break;
+		case 2:
+			break;
+		case 3:
+			exit;
+			break;
+	}
+	//Fermeture des polices
 	TTF_CloseFont(title);
 	TTF_CloseFont(menu);
 }
+
+
 
 int			main(int ac, char **av)
 {
@@ -140,10 +219,6 @@ int			main(int ac, char **av)
 
 	screen = SDL_SetVideoMode(1280, 720, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); // Création du BG
 	SDL_WM_SetCaption("The Caytre Soldier", NULL);
-/*	aff_level(screen, fill_map("Level/Level1/slide1.txt"));
-	aff_vietmouss(screen, pos);
-	aff_grille(screen);
-	aff_hud(screen);*/
 	load_start_screen(screen);
 	pause();
 
